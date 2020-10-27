@@ -49,7 +49,6 @@ ENV CATKIN_WS=/root/catkin_ws BASALT_ROOT=/root/catkin_ws/src/basalt_ros BASALT_
 
 COPY ./ $BASALT_ROOT
 WORKDIR $CATKIN_WS
+COPY ./scripts/ $CATKIN_WS
 
-RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; catkin config -DCMAKE_BUILD_TYPE=Release && catkin build' && \
-    sed -i '/exec "$@"/i \
-               source "/root/catkin_ws/devel/setup.bash"' /ros_entrypoint.sh
+RUN ["/bin/bash", "-c", "chmod +x build.sh && ./build.sh && chmod +x modify_entrypoint.sh && ./modify_entrypoint.sh"]
