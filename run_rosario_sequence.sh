@@ -6,12 +6,45 @@
 set -eE # Any subsequent commands which fail will cause the shell script to exit immediately
 OUTPUT_TOPIC="/vio_back_end/odom"
 CATKIN_WS_DIR=$HOME/catkin_ws/
+
+function echoUsage()
+{
+    echo -e "Usage: ./run_rosario_sequence.sh [FLAG] \n\
+            \t -r run method in a detached docker container \n\
+            \t -o path to output file \n\
+            \t -h help" >&2
+}
+
+RUN_CONTAINER=0
+OUTPUT_FILE="trajectory.txt"
+while getopts "hro:" opt; do
+    case "$opt" in
+        h)
+            echoUsage
+            exit 0
+            ;;
+        r)  RUN_CONTAINER=1
+            ;;
+        o)  case $OPTARG in
+                -*) echo "ERROR: a path to output file must be provided"; echoUsage; exit 1 ;;
+                *) OUTPUT_FILE=$OPTARG ;;
+            esac
+            ;;
+        *)
+            echoUsage
+            exit 1
+            ;;
+    esac
+done
+
+shift $((OPTIND -1))
 BAG=$1
 
 function cleanup() {
   printf "\e[31m%s %s\e[m\n" "Cleaning"
   if [ -n "${CID}" ] ; then
     docker container stop $CID
+    # unset CID
   fi
   # rosnode kill -a
 }
@@ -29,8 +62,10 @@ function wait_docker() {
     done
 }
 
-echo "Starting docker container (detached mode)"
-CID=$(./run_basalt.sh -v detached)
+if [ $RUN_CONTAINER -eq 1 ] ; then
+    echo "Starting docker container (detached mode)"
+    CID=$(./run_basalt.sh -v detached)
+fi
 
 wait_docker $OUTPUT_TOPIC
 
@@ -40,6 +75,7 @@ ROS_HOME=`pwd` roslaunch launch/play_bag_viz.launch \
     type:=O \
     topic:=$OUTPUT_TOPIC \
     save_to_file:=true \
+    output_file:=$OUTPUT_FILE \
     bagfile:=$BAG
 
 #docker container logs $CID > logs_$CID.txt
