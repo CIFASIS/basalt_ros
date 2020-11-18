@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Perform several Basalt operations in a Docker container.
-# 1- Build docker image (compilation)
-# 2- Run method in a docker container (dev mode)
-# 3- Run method in a docker container (vis mode)
+# Perform several Basalt operations in a Docker container:
+#   1-Build docker image (compilation)
+#   2-Run method in a docker container (dev mode)
+#   3-Run method in a docker container (vis mode)
 
 DEV_MODE=0
 VIS_MODE=0
@@ -12,13 +12,16 @@ DETACHED=0
 MUTUALLY_EXCLUSIVE_OPTS=0
 LAUNCH_FILE=vio_rosario_nodelet.launch
 
+# Get full directory name of the script no matter where it is being called from
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 function echoUsage()
 {
-    echo -e "Usage: ./run_basalt.sh   -d | -v [detached] [-l LAUNCHFILE] | -b [-h]  \n\
+    echo -e "Usage: ./run.sh   -d | -v [detached] [-l LAUNCHFILE] | -b [-h]  \n\
                   \t -d dev mode \n\
-                  \t -v vis mode. \n\
+                  \t -v vis mode \n\
                   \t\t 'detached' to run in background \n\
-                  \t\t -l <NAME_OF_LAUNCHFILE> to run an specific launch file. \n\
+                  \t\t -l <NAME_OF_LAUNCHFILE> to run a specific launch file. \n\
                   \t\t\t It must be placed in basalt_ros1/launch/ \n\
                   \t -b build image \n\
                   \t -h help" >&2
@@ -79,25 +82,25 @@ if [ -z "$SOME_OPT" ]; then
 fi
 
 if [ $DEV_MODE -eq 1 ] ; then
-  docker run -it --net=host -v $(pwd):/root/catkin_ws/src/basalt_ros/ basalt:ros_melodic
+  docker run --rm -it --net=host -v $CURRENT_DIR:/root/catkin_ws/src/basalt_ros/ basalt:ros_melodic
 fi
 
 if [ $VIS_MODE -eq 1 ] ; then
   if [ $DETACHED -eq 1 ] ; then
     docker run -d --net=host \
-       -v $(pwd)/basalt_ros1/config/:/root/catkin_ws/src/basalt_ros/basalt_ros1/config/ \
-       -v $(pwd)/basalt_ros1/launch/:/root/catkin_ws/src/basalt_ros/basalt_ros1/launch/ \
+       -v $CURRENT_DIR/basalt_ros1/config/:/root/catkin_ws/src/basalt_ros/basalt_ros1/config/ \
+       -v $CURRENT_DIR/basalt_ros1/launch/:/root/catkin_ws/src/basalt_ros/basalt_ros1/launch/ \
        basalt:ros_melodic \
        roslaunch basalt_ros1 $LAUNCH_FILE
   else
     docker run --net=host \
-       -v $(pwd)/basalt_ros1/config/:/root/catkin_ws/src/basalt_ros/basalt_ros1/config/ \
-       -v $(pwd)/basalt_ros1/launch/:/root/catkin_ws/src/basalt_ros/basalt_ros1/launch/ \
+       -v $CURRENT_DIR/basalt_ros1/config/:/root/catkin_ws/src/basalt_ros/basalt_ros1/config/ \
+       -v $CURRENT_DIR/basalt_ros1/launch/:/root/catkin_ws/src/basalt_ros/basalt_ros1/launch/ \
        basalt:ros_melodic \
        roslaunch basalt_ros1 $LAUNCH_FILE
   fi
 fi
 
 if [ $BUILD -eq 1 ] ; then
-  docker build -t "basalt:ros_melodic" .
+  docker build --rm -t "basalt:ros_melodic" $CURRENT_DIR
 fi

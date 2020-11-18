@@ -1,3 +1,7 @@
 .git
+outputs/
 basalt/doc/
-
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.pdf
