@@ -12,4 +12,4 @@
 	url = https://github.com/berndpfrommer/basalt_ros2.git
 [submodule "basalt-mirror"]
 	path = basalt
-	url = https://github.com/berndpfrommer/basalt-mirror.git
+	url = git@repositorio.cifasis-conicet.gov.ar:robotica/basalt-mirror.git
