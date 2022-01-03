@@ -1,5 +1,7 @@
 FROM ros:melodic-perception
 
+RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+
 RUN apt-get update && apt-get install -y wget gnupg software-properties-common
 
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key| apt-key add -
@@ -42,8 +44,7 @@ RUN apt-get update && \
       clang-10 \
       clang-format-10 \
       build-essential \
-      python-catkin-tools \
-      ros-melodic-stereo-image-proc && \
+      python-catkin-tools && \
       rm -rf /var/lib/apt/lists/*
 
 # if you want to reference a previously defined env variable in another definition, use multiple ENV
