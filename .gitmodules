@@ -6,10 +6,10 @@
 	url = https://github.com/berndpfrommer/basalt_vio_ros1_msgs.git
 [submodule "basalt_ros1"]
 	path = basalt_ros1
-	url = git@repositorio.cifasis-conicet.gov.ar:robotica/basalt_ros1.git
+	url = git@github.com:CIFASIS/basalt_ros1.git
 [submodule "basalt_ros2"]
 	path = basalt_ros2
 	url = https://github.com/berndpfrommer/basalt_ros2.git
 [submodule "basalt-mirror"]
 	path = basalt
-	url = git@repositorio.cifasis-conicet.gov.ar:robotica/basalt-mirror.git
+	url = git@github.com:CIFASIS/basalt-mirror.git
